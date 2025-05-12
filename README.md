@@ -116,7 +116,7 @@ ollama list
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/DocuSage.git
+git clone https://github.com/Harshil7875/DocuSage.git
 cd DocuSage
 
 # Install server dependencies
