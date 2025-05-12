@@ -1,0 +1,968 @@
+<!-- web/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuSage - Advanced Document Summarizer</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #7aa2c7;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #e1e4e8;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* Dark mode variables */
+        :root.dark {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        main {
+            flex: 1;
+            max-width: 800px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .options-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-color);
+            border-radius: 8px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .option-group label {
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .option-group select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: var(--bg-color);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .upload-area.dragging {
+            border-color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-info {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-size {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .summary-content {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .history-panel {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: var(--bg-color);
+        }
+
+        .history-item-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .history-item-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .server-config {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            color: var(--warning-color);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .server-config input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .server-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--error-color);
+        }
+
+        .status-indicator.online {
+            background: var(--success-color);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .options-section {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 0 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .upload-area {
+                padding: 2rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📄</div>
+                <div>
+                    <h1>DocuSage</h1>
+                    <p class="tagline">Advanced Document Summarization</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="server-config">
+            <span>⚙️ Server:</span>
+            <input type="text" id="serverIp" placeholder="192.168.1.5" value="localhost">
+            <span>Port:</span>
+            <input type="text" id="serverPort" placeholder="8000" value="8000">
+            <span class="server-status">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Checking...</span>
+            </span>
+        </div>
+
+        <div class="alert alert-error" id="errorAlert"></div>
+        <div class="alert alert-success" id="successAlert"></div>
+
+        <div class="card">
+            <div class="options-section">
+                <div class="option-group">
+                    <label for="summaryLength">
+                        <span>📏</span> Summary Length
+                    </label>
+                    <select id="summaryLength">
+                        <option value="brief">Brief (2-3 sentences)</option>
+                        <option value="standard" selected>Standard</option>
+                        <option value="detailed">Detailed</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="language">
+                        <span>🌐</span> Language
+                    </label>
+                    <select id="language">
+                        <option value="en" selected>English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <p class="upload-text">Drag & drop your document here or click to browse</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports .txt and .pdf files (max 10MB)</p>
+                <input type="file" id="fileInput" accept=".txt,.pdf">
+            </div>
+
+            <div class="file-info" id="fileInfo">
+                <div class="file-icon" id="fileIcon">📄</div>
+                <div class="file-details">
+                    <div class="file-name" id="fileName"></div>
+                    <div class="file-size" id="fileSize"></div>
+                </div>
+                <button class="btn-secondary" onclick="clearFile()">✖ Remove</button>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="summarizeBtn" onclick="summarizeDocument()" disabled>
+                    <span>🚀</span> Summarize Document
+                </button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your document...</p>
+        </div>
+
+        <div class="results card" id="results">
+            <div class="summary-header">
+                <div class="summary-icon">✓</div>
+                <h2 class="summary-title">Document Summary</h2>
+            </div>
+            <div class="summary-content" id="summaryContent"></div>
+            <div class="summary-actions">
+                <button class="btn-primary" onclick="copySummary()">
+                    <span>📋</span> Copy Summary
+                </button>
+                <button class="btn-secondary" onclick="downloadSummary()">
+                    <span>💾</span> Download as Text
+                </button>
+                <button class="btn-secondary" onclick="speakSummary()">
+                    <span>🔊</span> Read Aloud
+                </button>
+                <button class="btn-secondary" onclick="reset()">
+                    <span>🔄</span> New Document
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="historyCard" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">Recent Summaries</h3>
+            <div class="history-panel" id="historyPanel"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by Ollama & Gemma3 | Running locally on your network</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem;">
+            <kbd>Ctrl+O</kbd> Open file | <kbd>Ctrl+Enter</kbd> Summarize | <kbd>Ctrl+C</kbd> Copy summary
+        </p>
+    </footer>
+
+    <script>
+        // Global variables
+        let selectedFile = null;
+        let currentSummary = '';
+        let currentMetadata = null;
+        let speechSynthesis = window.speechSynthesis;
+        let serverCheckInterval = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-detect server from where the page was loaded
+            const currentHost = window.location.hostname;
+            const currentPort = window.location.port || '8000';
+            
+            // Set the server IP and port to match where the page was served from
+            document.getElementById('serverIp').value = currentHost;
+            document.getElementById('serverPort').value = currentPort;
+            
+            // Initialize other features
+            initializeTheme();
+            loadHistory();
+            checkServerStatus();
+            startServerMonitoring();
+            setupKeyboardShortcuts();
+        });
+
+        // Theme management
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+        }
+
+        // Server status monitoring
+        async function checkServerStatus() {
+            const serverIp = document.getElementById('serverIp').value || 'localhost';
+            const serverPort = document.getElementById('serverPort').value || '8000';
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+
+            try {
+                const response = await fetch(`http://${serverIp}:${serverPort}/health`, {
+                    method: 'GET',
+                    timeout: 5000
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statusIndicator.classList.add('online');
+                    statusText.textContent = 'Online';
+                    
+                    if (data.ollama === 'offline') {
+                        statusText.textContent = 'Server online, Ollama offline';
+                        showError('Warning: Ollama is not running. Please start Ollama service.');
+                    }
+                } else {
+                    throw new Error('Server not responding');
+                }
+            } catch (error) {
+                statusIndicator.classList.remove('online');
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function startServerMonitoring() {
+            serverCheckInterval = setInterval(checkServerStatus, 30000);
+        }
+
+        // File upload handling
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileIcon = document.getElementById('fileIcon');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'text/plain' || file.type === 'application/pdf') {
+                    fileInput.files = files;
+                    handleFileSelect();
+                } else {
+                    showError('Please select a .txt or .pdf file');
+                }
+            }
+        });
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                // Check file size (10MB limit)
+                if (file.size > 10 * 1024 * 1024) {
+                    showError('File is too large. Maximum size is 10MB.');
+                    return;
+                }
+
+                selectedFile = file;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileIcon.textContent = file.type === 'application/pdf' ? '📑' : '📄';
+                fileInfo.style.display = 'flex';
+                uploadArea.style.display = 'none';
+                summarizeBtn.disabled = false;
+                clearAlerts();
+            }
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            uploadArea.style.display = 'block';
+            summarizeBtn.disabled = true;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+        }
+
+        // Summarization with options
+        async function summarizeDocument() {
+            if (!selectedFile) return;
+
+            const serverIp = document.getElementById('serverIp').value || 'localhost';
+            const serverPort = document.getElementById('serverPort').value || '8000';
+            const url = `http://${serverIp}:${serverPort}/summarize`;
+
+            clearAlerts();
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            summarizeBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('length', document.getElementById('summaryLength').value);
+            formData.append('language', document.getElementById('language').value);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentSummary = data.summary;
+                currentMetadata = data.metadata;
+                
+                document.getElementById('summaryContent').textContent = currentSummary;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                showSuccess('Document summarized successfully!');
+                
+                // Save to history
+                saveToHistory();
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                showError(`Error: ${error.message}`);
+                summarizeBtn.disabled = false;
+            }
+        }
+
+        // Summary actions
+        function copySummary() {
+            navigator.clipboard.writeText(currentSummary).then(() => {
+                showSuccess('Summary copied to clipboard!');
+            }).catch(err => {
+                showError('Failed to copy summary');
+            });
+        }
+
+        function downloadSummary() {
+            const blob = new Blob([currentSummary], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = selectedFile.name.replace(/\.[^/.]+$/, '') + '_summary.txt';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showSuccess('Summary downloaded!');
+        }
+
+        function speakSummary() {
+            if (!speechSynthesis) {
+                showError('Text-to-speech is not supported in your browser');
+                return;
+            }
+
+            // Stop any ongoing speech
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(currentSummary);
+            utterance.lang = document.getElementById('language').value;
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+
+            utterance.onstart = () => {
+                document.querySelector('button[onclick="speakSummary()"]').innerHTML = 
+                    '<span>⏸️</span> Stop Reading';
+            };
+
+            utterance.onend = () => {
+                document.querySelector('button[onclick="speakSummary()"]').innerHTML = 
+                    '<span>🔊</span> Read Aloud';
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function reset() {
+            clearFile();
+            document.getElementById('results').style.display = 'none';
+            clearAlerts();
+            currentSummary = '';
+            currentMetadata = null;
+        }
+
+        // History management
+        function saveToHistory() {
+            const history = JSON.parse(localStorage.getItem('docusage_history') || '[]');
+            history.unshift({
+                fileName: selectedFile.name,
+                summary: currentSummary,
+                metadata: currentMetadata,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 10 entries
+            history.splice(10);
+            localStorage.setItem('docusage_history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('docusage_history') || '[]');
+            const historyPanel = document.getElementById('historyPanel');
+            const historyCard = document.getElementById('historyCard');
+
+            if (history.length === 0) {
+                historyCard.style.display = 'none';
+                return;
+            }
+
+            historyCard.style.display = 'block';
+            historyPanel.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="loadFromHistory(${index})">
+                    <div class="history-item-name">${item.fileName}</div>
+                    <div class="history-item-date">${new Date(item.timestamp).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadFromHistory(index) {
+            const history = JSON.parse(localStorage.getItem('docusage_history') || '[]');
+            const item = history[index];
+            
+            if (item) {
+                currentSummary = item.summary;
+                currentMetadata = item.metadata;
+                document.getElementById('summaryContent').textContent = currentSummary;
+                document.getElementById('results').style.display = 'block';
+                showSuccess(`Loaded summary for ${item.fileName}`);
+            }
+        }
+
+        // Keyboard shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl/Cmd + O: Open file
+                if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+                    e.preventDefault();
+                    fileInput.click();
+                }
+                
+                // Ctrl/Cmd + Enter: Summarize
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!summarizeBtn.disabled) {
+                        summarizeDocument();
+                    }
+                }
+                
+                // Ctrl/Cmd + C: Copy summary (when results visible)
+                if ((e.ctrlKey || e.metaKey) && e.key === 'c' && 
+                    document.getElementById('results').style.display !== 'none') {
+                    e.preventDefault();
+                    copySummary();
+                }
+                
+                // Esc: Clear/reset
+                if (e.key === 'Escape') {
+                    reset();
+                }
+            });
+        }
+
+        // Alert handling
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            alert.innerHTML = `<span>⚠️</span> ${message}`;
+            alert.style.display = 'flex';
+        }
+
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            alert.innerHTML = `<span>✅</span> ${message}`;
+            alert.style.display = 'flex';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearAlerts() {
+            document.getElementById('errorAlert').style.display = 'none';
+            document.getElementById('successAlert').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+*.log
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+.env
+dev_env/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Sensitive Files - IMPORTANT!
+client/sample_docs/*.pdf
+client/sample_docs/*CPT*
+client/sample_docs/*I-20*
+client/sample_docs/*W2*
+client/sample_docs/*W-2*
+client/sample_docs/*Resume*
+client/sample_docs/*resume*
+client/sample_docs/*CV*
+client/sample_docs/*personal*
+client/sample_docs/*private*
+client/sample_docs/*confidential*
+client/sample_docs/*tax*
+client/sample_docs/*visa*
+*.tax
+*.ssn
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.cache
+server/documents/*
+uploads/
+temp/
+tmp/
+
+# Configuration files with secrets
+config.ini
+config.json
+secrets.json
+.env.local
+.env.production
+*.secret
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+log.txt
+
+# Test outputs
+test-results/
+test_output/
+coverage/
+
+# Jupyter Notebooks (if any)
+.ipynb_checkpoints/
+*.ipynb
+
+# Package files
+*.zip
+*.tar.gz
+*.rar
+
+# Model files (if storing local models)
+models/
+*.bin
+*.onnx
+*.pt
+*.pth
+
+# Node modules (in case you add frontend dependencies)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ollama models (large files)
+ollama_models/
+*.gguf
+*.ggml
+
+# Output files
+output/
+summaries/
+results/
+exports/
+
+# DocuSage specific
+server/documents/*
+!server/documents/.gitkeep
+client/sample_docs/personal/
+client/output/
+batch_output/
+*.summary
+*.summarized
+
+# Keep test documents but ignore sensitive ones
+!client/sample_docs/sample_*.txt
+!client/sample_docs/test_*.pdf
+
+# API keys and credentials
+*_api_key*
+*_secret*
+credentials/
