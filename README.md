@@ -74,9 +74,9 @@ uvicorn server:app --host 0.0.0.0 --port 8000  # Terminal 2
 
 | Component | Requirement |
 |-----------|-------------|
-| **OS** | macOS with Apple Silicon (M1/M2/M3) |
-| **RAM** | 8GB minimum (16GB recommended) |
-| **Storage** | 10GB free space |
+| **OS** | macOS with Apple Silicon (M1/M2/M3/M4 Max) |
+| **RAM** | 36GB minimum |
+| **Storage** | 100GB free space |
 | **Python** | 3.10 or higher |
 | **Network** | Local LAN for multi-device access |
 
@@ -274,29 +274,11 @@ pytest
 black .
 ```
 
-## 📈 Roadmap
-
-### Version 2.1 (Q2 2024)
-- [ ] Docker support
-- [ ] Additional language models
-- [ ] Web UI improvements
-
-### Version 3.0 (Q3 2024)
-- [ ] Cloud integration options
-- [ ] Mobile app
-- [ ] Advanced analytics
-
-### Future
-- [ ] Real-time collaboration
-- [ ] Custom model training
-- [ ] Enterprise features
-
 ## 📚 Documentation
 
 - [API Reference](docs/api-reference.md)
 - [User Guide](docs/user-guide.md)
 - [Developer Guide](docs/developer-guide.md)
-- [FAQ](docs/faq.md)
 
 ## 🙏 Acknowledgments
 
@@ -310,10 +292,3 @@ black .
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
-<p align="center">
-  Made with ❤️ for the local-first AI community<br>
-  <a href="https://github.com/yourusername/DocuSage">Star us on GitHub</a> •
-  <a href="https://twitter.com/docusage">Follow on Twitter</a> •
-  <a href="https://discord.gg/docusage">Join our Discord</a>
-</p>
